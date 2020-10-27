@@ -36,5 +36,4 @@ class RASClient:
     def reload(self, fogbow_token):
         headers = {'Fogbow-User-Token': fogbow_token}
         ras_reload_url = self.RAS_url + "/admin/reload"
-        response = requests.request("POST", ras_reload_url, headers=headers)
-        print(response.text)
+        requests.request("POST", ras_reload_url, headers=headers)
