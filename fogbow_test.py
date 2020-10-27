@@ -23,21 +23,6 @@ if __name__ == "__main__":
     RAS_port = int(config.get("configuration", "RAS_port"))
     AS_host = config.get("configuration", "AS_host")
     AS_port = int(config.get("configuration", "AS_port"))
-    # env_var = config.get("configuration", "env_var")
-
-    # ras_project_base_path = "/home/armstrong/Workspace/UFCG/LSD/fogbow/adding_roles_as/resource-allocation-service"
-    # as_project_base_path = "/home/armstrong/Workspace/UFCG/LSD/fogbow/adding_roles_as/authentication-service"
-    # base_conf = "/src/main/resources/private/ras1.conf"
-    # modified_conf = "/src/main/resources/private/ras2.conf"
-    # publicKey = "-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA2uLMdBAGXUCZIHDf1NSsQvh9r72noQEMHQXw+lbKYuxxVzoMKjfa0qXPDvWIQ4E5wJO/VskhBNRZQsWbHPqkMFzKlonzu+7KNzyF7Dd0E0KBGfzNWTSeaPXvpUgG7uRULn206mmgOTRWeG+HXbzFjtpOVif3F0w+yQsQ2nSFVPTXXdX7pEAbDIMdH0I+Nb3y1Yl5ZJsO+rZcIUK0td7kxM+BnKyQTyLkWIocwiw6WXHLOrwEKYDzv35uSha8+iB68kXbehWJxD7mG//WdVzW3Rf7gmkApzPbOkeMoKOZJOS7DNkeOl150WbilLURQ7gHH6EiyDqskIlyRYiW6FDF+wIDAQAB-----END PUBLIC KEY-----"
-    # username = "fogbow"
-    # password = "dfdaf"
-    # JAVA_HOME = "/usr/lib/jvm/java-8-openjdk-amd64"
-    # RAS_host = "localhost"
-    # RAS_port = 8080
-    # AS_host = "localhost"
-    # AS_port = 8081
-    # env_var = {"JAVA_HOME": JAVA_HOME}
 
     print("Starting AS")
     print("---------------------------------")
