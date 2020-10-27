@@ -1,0 +1,13 @@
+[configuration]
+ras_project_base_path =
+as_project_base_path =
+base_conf =
+modified_conf =
+public_key =
+username =
+password =
+java_home =
+RAS_host =
+RAS_port =
+AS_host =
+AS_port =
