@@ -19,22 +19,73 @@ class FogbowTest:
         pass
 
 
+class CloudsTestBeforeReload(FogbowTest):
+
+    def __init__(self, ras_client_1, ras_client_2, token):
+        config = configparser.ConfigParser()
+        config.read("config.conf")
+        self.provider_1 = config.get("clouds_test_before", "provider_1")
+        self.provider_2 = config.get("clouds_test_before", "provider_2")
+        self.cloud_names_1 = config.get("clouds_test_before", "cloud_names_1")
+        self.cloud_names_2 = config.get("clouds_test_before", "cloud_names_2")
+        self.ras_client_1 = ras_client_1
+        self.ras_client_2 = ras_client_2
+        self.token = token
+
+    def test(self):
+        cloud_names_list_1 = []
+        for string in self.cloud_names_1.split(","):
+            cloud_names_list_1.append(string.strip())
+
+        cloud_names_list_2 = []
+        for string in self.cloud_names_2.split(","):
+            cloud_names_list_2.append(string.strip())
+
+        result_test_1 = cloud_names_list_1 == self.ras_client_1.clouds(self.token)
+        result_test_2 = cloud_names_list_2 == self.ras_client_2.clouds(self.token)
+        result_test_3 = cloud_names_list_1 == self.ras_client_2.clouds_by_provider(self.token, self.provider_1)
+        result_test_4 = cloud_names_list_2 == self.ras_client_1.clouds_by_provider(self.token, self.provider_2)
+
+        return result_test_1 and result_test_2 and result_test_3 and result_test_4
+
+    def get_test_name(self):
+        return "Cloud names before reload"
+
+    def cleanup(self):
+        pass
+
+
 class CloudsTest(FogbowTest):
 
-    def __init__(self, ras_client, token, cloud_names):
-        self.ras_client = ras_client
+    def __init__(self, ras_client_1, ras_client_2, token):
+        config = configparser.ConfigParser()
+        config.read("config.conf")
+        self.provider_1 = config.get("clouds_test", "provider_1")
+        self.provider_2 = config.get("clouds_test", "provider_2")
+        self.cloud_names_1 = config.get("clouds_test", "cloud_names_1")
+        self.cloud_names_2 = config.get("clouds_test", "cloud_names_2")
+        self.ras_client_1 = ras_client_1
+        self.ras_client_2 = ras_client_2
         self.token = token
-        self.cloud_names = cloud_names
 
     def get_test_name(self):
         return "Cloud names"
 
     def test(self):
-        cloud_names_list = []
-        for string in self.cloud_names.split(","):
-            cloud_names_list.append(string.strip())
+        cloud_names_list_1 = []
+        for string in self.cloud_names_1.split(","):
+            cloud_names_list_1.append(string.strip())
 
-        return cloud_names_list == self.ras_client.clouds(self.token)
+        cloud_names_list_2 = []
+        for string in self.cloud_names_2.split(","):
+            cloud_names_list_2.append(string.strip())
+
+        result_test_1 = cloud_names_list_1 == self.ras_client_1.clouds(self.token)
+        result_test_2 = cloud_names_list_2 == self.ras_client_2.clouds(self.token)
+        result_test_3 = cloud_names_list_1 == self.ras_client_2.clouds_by_provider(self.token, self.provider_1)
+        result_test_4 = cloud_names_list_2 == self.ras_client_1.clouds_by_provider(self.token, self.provider_2)
+
+        return result_test_1 and result_test_2 and result_test_3 and result_test_4
 
     def cleanup(self):
         pass

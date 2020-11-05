@@ -6,10 +6,11 @@ from pathlib import Path
 
 
 class RASBootstrap:
-    def __init__(self, base_conf, ras_project_base_path, ras_env_path, java_home):
+    def __init__(self, base_conf, ras_project_base_path, ras_env_path, java_home, application_properties):
         self.base_conf = base_conf
         self.ras_project_base_path = ras_project_base_path
         self.ras_env_path = ras_env_path
+        self.application_properties = application_properties
         self.env_var = {"JAVA_HOME": java_home}
         self.process = None
 
@@ -22,6 +23,11 @@ class RASBootstrap:
 
         copy2(self.base_conf, self.ras_env_path +
               "resource-allocation-service/target/classes/private/ras.conf")
+        copy2(self.base_conf, self.ras_env_path +
+              "resource-allocation-service/src/main/resources/private/ras.conf")
+
+        subprocess.Popen(args=["cp", self.application_properties, self.ras_env_path +
+                         "resource-allocation-service/target/classes/application.properties"])
 
         with open("ras.log", "w") as f:
             self.process = subprocess.Popen(args=[self.ras_env_path + "resource-allocation-service/mvnw",

@@ -68,6 +68,12 @@ class RASClient:
         response = requests.request("GET", ras_clouds_url, headers=headers)
         return json.loads(response.text)["clouds"]
 
+    def clouds_by_provider(self, fogbow_token, provider):
+        headers = {'Fogbow-User-Token': fogbow_token}
+        ras_clouds_by_provider_url = self.RAS_url + "/clouds/" + provider
+        response = requests.request("GET", ras_clouds_by_provider_url, headers=headers)
+        return json.loads(response.text)["clouds"]
+
     #
     # Networks
     #
