@@ -71,9 +71,6 @@ class TestRunner:
         self.rasc_2 = fogbow_client.RASClient(self.RAS_host_2, self.RAS_port_2)
         self.rasc_2.wait_until_is_active()
 
-        print(self.rasc_1.clouds(self.token))
-        print(self.rasc_2.clouds(self.token))
-
     def _change_config(self):
         print("Updating configuration file")
 
@@ -90,10 +87,14 @@ class TestRunner:
     def _check_pre_reload(self):
         print("Check pre reload")
         cloud_test = CloudsTestBeforeReload(self.rasc_1, self.rasc_2, self.token)
+        networks_test = NetworksTest(ras_client_1=self.rasc_1,
+                                     ras_client_2=self.rasc_2,
+                                     token=self.token)
 
         test_list = []
 
         test_list.append(cloud_test)
+        test_list.append(networks_test)
 
         for test in test_list:
             try:
@@ -112,7 +113,9 @@ class TestRunner:
 
     def _check(self):
         cloud_test = CloudsTestAfterReload(self.rasc_1, self.rasc_2, self.token)
-        networks_test = NetworksTest(ras_client=self.rasc_1, token=self.token)
+        networks_test = NetworksTest(ras_client_1=self.rasc_1,
+                                     ras_client_2=self.rasc_2,
+                                     token=self.token)
 
         test_list = []
 
