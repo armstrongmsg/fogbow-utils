@@ -5,7 +5,7 @@ import fogbow_tools
 
 from shutil import copy2
 
-from tests import CloudsTest, NetworksTest, CloudsTestBeforeReload
+from tests import CloudsTestAfterReload, NetworksTest, CloudsTestBeforeReload
 
 
 class TestRunner:
@@ -111,7 +111,7 @@ class TestRunner:
                 test.cleanup()
 
     def _check(self):
-        cloud_test = CloudsTest(self.rasc_1, self.rasc_2, self.token)
+        cloud_test = CloudsTestAfterReload(self.rasc_1, self.rasc_2, self.token)
         networks_test = NetworksTest(ras_client=self.rasc_1, token=self.token)
 
         test_list = []
