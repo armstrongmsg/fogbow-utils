@@ -1,0 +1,27 @@
+[conf]
+username =  
+password = 
+user_public_key = 
+fogbow_ip = 
+as_port = 
+ras_port = 
+fhs_port = 
+test_utils_port = 
+
+[admin]
+username = 
+email = 
+description = 
+enabled = 
+
+[federation]
+name = 
+description = 
+enabled = 
+
+[service]
+owner = 
+endpoint = 
+type = 
+discovery_policy =
+access_policy = 

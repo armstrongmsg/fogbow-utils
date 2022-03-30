@@ -1,4 +1,7 @@
 config.conf
+fhs_test.conf
+.project
+.pydevproject
 *.log
 .idea/
 __pycache__/
