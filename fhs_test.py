@@ -54,6 +54,26 @@ class Configuration_Loader:
         
     def load_federation(self, federation_config_name):
         federation_name = self.config[federation_config_name]["name"]
+        
+        cloud_names = self.config[federation_config_name]["cloud_names"]
+
+        credentials = {}
+        
+        for cloud_name in cloud_names.split(","):
+            project_name = self.config[cloud_name]["cloud_user_credentials_projectname"]
+            password = self.config[cloud_name]["cloud_user_credentials_password"]
+            username = self.config[cloud_name]["cloud_user_credentials_username"]
+            domain = self.config[cloud_name]["cloud_user_credentials_domain"]
+        
+            cloud_credentials = {"projectname": project_name, 
+                           "password": password, 
+                           "username": username, 
+                           "domain": domain}
+            
+            credentials[cloud_name] = cloud_credentials
+        
+        federation_metadata = {"credentials": json.dumps(credentials)}
+        
         federation_description = self.config[federation_config_name]["description"]
         federation_enabled = self.config[federation_config_name]["enabled"]
     
@@ -62,8 +82,8 @@ class Configuration_Loader:
         else:
             federation_enabled = False
             
-        return Federation(federation_name, federation_description, 
-                          federation_enabled)
+        return Federation(federation_name, federation_metadata, 
+                          federation_description, federation_enabled)
         
     def load_service(self, service_name):
         service_owner = self.config[service_name]["owner"]
@@ -110,8 +130,9 @@ class Federation_Admin:
 
         
 class Federation:
-    def __init__(self, name, description, enabled):
+    def __init__(self, name, metadata, description, enabled):
         self.name = name
+        self.metadata = metadata
         self.description = description
         self.enabled = enabled
 
@@ -154,7 +175,7 @@ class FHS_Client:
         
         return add_new_fed_admin_response.json()["memberId"]
     
-    def create_federation(self, token, name, description, enabled):
+    def create_federation(self, token, name, metadata, description, enabled):
         create_federation_endpoint = self.fhs_url + "/fhs/Federation"
         
         headers = {
@@ -164,6 +185,7 @@ class FHS_Client:
         
         body = {
             "name": name,
+            "metadata": metadata,
             "description": description, 
             "enabled": enabled
         }
@@ -372,7 +394,7 @@ class Test1(FHS_Test):
     
         print("### Creating federation")
         federation_id = fhs_client.create_federation(no_federation_fhs_token, federation.name, 
-                                                     federation.description, federation.enabled)
+                                                     federation.metadata, federation.description, federation.enabled)
         print("Federation id: %s\n" % (federation_id,))
         
         print("### Granting membership")
