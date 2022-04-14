@@ -1,7 +1,6 @@
 import requests
 import configparser
 import json
-from google.protobuf.internal import test_util
 import time
 
 
@@ -9,7 +8,7 @@ def get_content_from_response(response):
     return json.loads(json.loads(response)["responseData"]["content"])
 
 
-class Configuration_Loader:
+class ConfigurationLoader:
     def __init__(self, configuration_file):
         self.config = configparser.ConfigParser()
         self.config.read(configuration_file)
@@ -49,8 +48,8 @@ class Configuration_Loader:
         else:
             admin_enabled = False
             
-        return Federation_Admin(admin_username, admin_email, 
-                                admin_description, admin_enabled)
+        return FederationAdmin(admin_username, admin_email,
+                               admin_description, admin_enabled)
         
     def load_federation(self, federation_config_name):
         federation_name = self.config[federation_config_name]["name"]
@@ -66,16 +65,16 @@ class Configuration_Loader:
             domain = self.config[cloud_name]["cloud_user_credentials_domain"]
         
             cloud_credentials = {"projectname": project_name, 
-                           "password": password, 
-                           "username": username, 
-                           "domain": domain}
+                                 "password": password,
+                                 "username": username,
+                                 "domain": domain}
             
             credentials[cloud_name] = cloud_credentials
         
         federation_metadata = {"credentials": json.dumps(credentials)}
         
         federation_description = self.config[federation_config_name]["description"]
-        federation_enabled = self.config[federation_config_name]["enabled"]
+        # federation_enabled = self.config[federation_config_name]["enabled"]
     
         if self.config[federation_config_name]["enabled"] == "True":
             federation_enabled = True
@@ -89,15 +88,15 @@ class Configuration_Loader:
         service_owner = self.config[service_name]["owner"]
         service_endpoint = self.config[service_name]["endpoint"]
         service_type = self.config[service_name]["type"]
-        service_metadata = {"serviceType":service_type}
+        service_metadata = {"serviceType": service_type}
         service_discovery_policy = self.config[service_name]["discovery_policy"]
         service_access_policy = self.config[service_name]["access_policy"]
         
-        return Federation_Service(service_owner, service_endpoint, service_metadata, 
-                                  service_discovery_policy, service_access_policy)
+        return FederationService(service_owner, service_endpoint, service_metadata,
+                                 service_discovery_policy, service_access_policy)
 
     
-class AS_Client:
+class ASClient:
     def __init__(self, fogbow_ip, as_port):
         self.as_url = "http://%s:%s" % (fogbow_ip, as_port)
 
@@ -108,11 +107,12 @@ class AS_Client:
             "Content-Type": "application/json"
         }
 
-        body = {"publicKey": user_public_key, 
+        body = {
+            "publicKey": user_public_key,
             "credentials": {
-                "username":username,
-                "password":password,
-                "federationId":federation
+                "username": username,
+                "password": password,
+                "federationId": federation
             }
         }
 
@@ -121,7 +121,7 @@ class AS_Client:
         return token_response.json()["token"]
 
 
-class Federation_Admin:
+class FederationAdmin:
     def __init__(self, admin_name, admin_email, admin_description, admin_enabled):
         self.name = admin_name
         self.email = admin_email
@@ -137,7 +137,7 @@ class Federation:
         self.enabled = enabled
 
 
-class Federation_Service:
+class FederationService:
     def __init__(self, owner, endpoint, metadata, discovery_policy, access_policy):
         self.owner = owner
         self.endpoint = endpoint
@@ -146,7 +146,7 @@ class Federation_Service:
         self.access_policy = access_policy
 
 
-class FHS_Client:
+class FHSClient:
     def __init__(self, fogbow_ip, fhs_port):
         self.fhs_url = "http://%s:%s" % (fogbow_ip, fhs_port)
         
@@ -237,8 +237,10 @@ class FHS_Client:
         
         return register_service_response.json()["serviceId"]
     
-    def invoke_service(self, token, federation_id, service_id, method, invocation_path, invocation_headers, invocation_body):
-        invoke_service_endpoint = self.fhs_url + "/fhs/Invocation/" + federation_id + "/" + service_id
+    def invoke_service(self, token, federation_id, service_id, method, invocation_path,
+                       invocation_headers, invocation_body):
+        invoke_service_endpoint = self.fhs_url + \
+                                  "/fhs/Invocation/" + federation_id + "/" + service_id
         
         headers = {
             "Content-Type": "application/json",
@@ -257,7 +259,7 @@ class FHS_Client:
         return invoke_service_response.content
 
 
-class TestUtils_Client:
+class TestUtilsClient:
     def __init__(self, fogbow_ip, test_utils_port):
         self.test_utils_url = "http://%s:%s" % (fogbow_ip, test_utils_port)
     
@@ -273,14 +275,15 @@ class TestUtils_Client:
                 "encryptKey": key_to_encrypt 
         }
         
-        rewrap_response = requests.request("GET", rewrap_endpoint, headers=headers, data=json.dumps(body))
+        rewrap_response = requests.request("GET", rewrap_endpoint,
+                                           headers=headers, data=json.dumps(body))
         return rewrap_response.content.decode("utf-8")
 
 
-class FHS_Test:
+class FHSTest:
     def wait_until_network_is_ready(self, fhs_client, no_federation_fhs_token, 
-                                     federated_fhs_token, federation_id, 
-                                     networks_service_id, network_id):
+                                    federated_fhs_token, federation_id,
+                                    networks_service_id, network_id):
         network_state = self._get_network_state(fhs_client, no_federation_fhs_token, 
                                                 federated_fhs_token, federation_id, 
                                                 networks_service_id, network_id)
@@ -296,8 +299,8 @@ class FHS_Test:
                            federation_id, networks_service_id, network_id):
         response = fhs_client.invoke_service(no_federation_fhs_token, 
                                              federation_id, networks_service_id, 
-                                             "GET", ["status"], {"Content-Type":"application/json", 
-                                                                 "Fogbow-User-Token":federated_fhs_token}, 
+                                             "GET", ["status"], {"Content-Type": "application/json",
+                                                                 "Fogbow-User-Token": federated_fhs_token},
                                              {})
         networks = get_content_from_response(response)
 
@@ -308,8 +311,8 @@ class FHS_Test:
         return None
     
     def wait_until_compute_is_ready(self, fhs_client, no_federation_fhs_token,
-                                     federated_fhs_token, federation_id, 
-                                     computes_service_id, compute_id):
+                                    federated_fhs_token, federation_id,
+                                    computes_service_id, compute_id):
         compute_state = self._get_compute_state(fhs_client, no_federation_fhs_token, 
                                                 federated_fhs_token, federation_id, 
                                                 computes_service_id, compute_id)
@@ -326,8 +329,8 @@ class FHS_Test:
                            computes_service_id, compute_id):
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              computes_service_id, "GET", ["status"], 
-                                             {"Content-Type":"application/json", 
-                                              "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              {})
         computes = get_content_from_response(response)
 
@@ -338,21 +341,20 @@ class FHS_Test:
         return None
     
     def wait_for_compute_deletion(self, fhs_client, no_federation_fhs_token, 
-                                   federated_fhs_token, federation_id, 
-                                   computes_service_id, compute_id):
+                                  federated_fhs_token, federation_id,
+                                  computes_service_id, compute_id):
         while not self._check_if_compute_was_deleted(fhs_client, no_federation_fhs_token, 
                                                      federated_fhs_token, federation_id, 
                                                      computes_service_id, compute_id):
             time.sleep(2)
 
-                
     def _check_if_compute_was_deleted(self, fhs_client, no_federation_fhs_token, 
                                       federated_fhs_token, federation_id, 
                                       computes_service_id, compute_id):
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              computes_service_id, "GET", ["status"], 
-                                             {"Content-Type":"application/json", 
-                                              "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              {})
         computes = get_content_from_response(response)
             
@@ -362,7 +364,8 @@ class FHS_Test:
             
         return True
 
-class Test1(FHS_Test):
+
+class Test1(FHSTest):
     
     def run(self, as_client, fhs_client, test_utils_client, configuration):
         federation_admin = configuration.load_federation_admin("admin")
@@ -412,9 +415,10 @@ class Test1(FHS_Test):
                                                             ras_get_clouds.owner, ras_get_clouds.endpoint, 
                                                             ras_get_clouds.metadata, ras_get_clouds.discovery_policy,
                                                             ras_get_clouds.access_policy)
-        get_images_service_id = fhs_client.register_service(no_federation_fhs_token, federation_id, ras_get_images.owner, 
-                                                            ras_get_images.endpoint, ras_get_images.metadata, 
-                                                            ras_get_images.discovery_policy, ras_get_images.access_policy)
+        get_images_service_id = fhs_client.register_service(no_federation_fhs_token, federation_id,
+                                                            ras_get_images.owner, ras_get_images.endpoint,
+                                                            ras_get_images.metadata, ras_get_images.discovery_policy,
+                                                            ras_get_images.access_policy)
         networks_service_id = fhs_client.register_service(no_federation_fhs_token, federation_id, ras_networks.owner, 
                                                           ras_networks.endpoint, ras_networks.metadata, 
                                                           ras_networks.discovery_policy, ras_networks.access_policy)
@@ -435,14 +439,16 @@ class Test1(FHS_Test):
         print("### Invoking get version")
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              get_version_service_id, "GET", [], 
-                                             {"Content-Type":"application/json", "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              {})
         print("Response: %s\n" % (str(response),))
         
         print("### Invoking get clouds")
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              get_clouds_service_id, "GET", [], 
-                                             {"Content-Type":"application/json", "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              {})
         print("Response: %s\n" % (str(response),))
         
@@ -452,7 +458,8 @@ class Test1(FHS_Test):
         print("### Invoking get images")
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              get_images_service_id, "GET", [configuration.provider, cloud_name], 
-                                             {"Content-Type":"application/json", "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              {})
         print("Response: %s" % (str(response),))
         
@@ -479,15 +486,16 @@ class Test1(FHS_Test):
         
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              networks_service_id, "POST", [], 
-                                             {"Content-Type":"application/json", "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              create_network_body)
         print("Response: %s" % (str(response),))
         
         network_id = get_content_from_response(response)["id"]
         
         self.wait_until_network_is_ready(fhs_client, no_federation_fhs_token, 
-                                          federated_fhs_token, federation_id, 
-                                          networks_service_id, network_id)
+                                         federated_fhs_token, federation_id,
+                                         networks_service_id, network_id)
         print("network is ready")
         
         print("### Invoking create compute")
@@ -499,26 +507,27 @@ class Test1(FHS_Test):
             "vCPU": configuration.compute_vcpu,
             "ram": configuration.compute_ram,
             "disk": configuration.compute_disk,
-            "imageId":image_id,
+            "imageId": image_id,
             "publicKey": configuration.compute_public_key,
             "userData": [{"extraUserDataFileContent": configuration.compute_user_data_file_content, 
-                          "extraUserDataFileType":configuration.compute_user_data_file_type, 
-                          "tag":configuration.compute_user_data_tag}],
+                          "extraUserDataFileType": configuration.compute_user_data_file_type,
+                          "tag": configuration.compute_user_data_tag}],
             "networkIds": [network_id],
             "requirements": {}
         }
         
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              computes_service_id, "POST", [], 
-                                             {"Content-Type":"application/json", "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              create_compute_body)
         print("Response: %s" % (str(response),))
         
         compute_id = get_content_from_response(response)["id"]
 
         self.wait_until_compute_is_ready(fhs_client, no_federation_fhs_token, 
-                                          federated_fhs_token, federation_id, 
-                                          computes_service_id, compute_id)
+                                         federated_fhs_token, federation_id,
+                                         computes_service_id, compute_id)
                 
         print("compute is ready")
         
@@ -526,36 +535,38 @@ class Test1(FHS_Test):
         
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              computes_service_id, "DELETE", [compute_id], 
-                                             {"Content-Type":"application/json", "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              {})
         print("Response: %s" % (str(response),))
         
         print("------ Waiting for compute deletion")
 
         self.wait_for_compute_deletion(fhs_client, no_federation_fhs_token, 
-                                        federated_fhs_token, federation_id, 
-                                        computes_service_id, compute_id)
+                                       federated_fhs_token, federation_id,
+                                       computes_service_id, compute_id)
         
         print("### Invoking delete network")
         
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
                                              networks_service_id, "DELETE", [network_id], 
-                                             {"Content-Type":"application/json", "Fogbow-User-Token":federated_fhs_token}, 
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
                                              {})
         print("Response: %s" % (str(response),))
 
 
-class Test_Runner:
+class TestRunner:
     def __init__(self):
-        configuration = Configuration_Loader("fhs_test.conf")
+        configuration = ConfigurationLoader("fhs_test.conf")
     
-        as_client = AS_Client(configuration.fogbow_ip, configuration.as_port)
-        fhs_client = FHS_Client(configuration.fogbow_ip, configuration.fhs_port)
-        test_utils_client = TestUtils_Client(configuration.fogbow_ip, configuration.test_utils_port)
+        as_client = ASClient(configuration.fogbow_ip, configuration.as_port)
+        fhs_client = FHSClient(configuration.fogbow_ip, configuration.fhs_port)
+        test_utils_client = TestUtilsClient(configuration.fogbow_ip, configuration.test_utils_port)
 
         Test1().run(as_client, fhs_client, test_utils_client, configuration)
 
 
 if __name__ == "__main__":
-    Test_Runner()
+    TestRunner()
     
