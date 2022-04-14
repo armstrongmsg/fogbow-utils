@@ -194,7 +194,39 @@ class FHSClient:
                                                       headers=headers, data=json.dumps(body))
         
         return create_federation_response.json()["id"]
-    
+
+    def create_attribute(self, token, federation_id, attribute_name):
+        create_attribute_endpoint = self.fhs_url + "/fhs/Attributes/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "name": attribute_name
+        }
+
+        create_federation_response = requests.request("POST", create_attribute_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return create_federation_response.json()["id"]
+
+    def get_attributes(self, token, federation_id):
+        get_attributes_endpoint = self.fhs_url + "/fhs/Attributes/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        create_federation_response = requests.request("GET", get_attributes_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return create_federation_response.json()
+
     def grant_membership(self, token, federation_id, username, email, description, enabled):
         grant_membership_endpoint = self.fhs_url + "/fhs/Membership/" + federation_id
         
@@ -214,7 +246,54 @@ class FHSClient:
                                                      headers=headers, data=json.dumps(body))
         
         return grant_membership_response.json()
-    
+
+    def list_members(self, token, federation_id):
+        list_members_endpoint = self.fhs_url + "/fhs/Membership/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        list_members_response = requests.request("GET", list_members_endpoint,
+                                                 headers=headers, data=json.dumps(body))
+
+        return list_members_response.json()
+
+    def grant_attribute(self, token, federation_id, member_id, attribute_id):
+        grant_attribute_endpoint = self.fhs_url + "/fhs/Authorization/" + \
+                                   federation_id + "/" + member_id + "/" + attribute_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        grant_attribute_response = requests.request("PUT", grant_attribute_endpoint,
+                                                    headers=headers, data=json.dumps(body))
+
+        return grant_attribute_response.status_code
+
+    def revoke_attribute(self, token, federation_id, member_id, attribute_id):
+        revoke_attribute_endpoint = self.fhs_url + "/fhs/Authorization/" + \
+                                   federation_id + "/" + member_id + "/" + attribute_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        revoke_attribute_response = requests.request("DELETE", revoke_attribute_endpoint,
+                                                     headers=headers, data=json.dumps(body))
+
+        return revoke_attribute_response.status_code
+
     def register_service(self, token, federation_id, owner_id, endpoint, metadata, 
                          discovery_policy, access_policy):
         register_service_endpoint = self.fhs_url + "/fhs/Services/" + federation_id
@@ -379,33 +458,68 @@ class Test1(FHSTest):
         print("### Getting token")
         user_token = as_client.get_token(configuration.user_public_key, 
                                          configuration.username, configuration.password, "")
-        print("Token: %s\n" % (user_token,))
+        print("Token: %s\n" % user_token)
     
         print("### Getting fhs public key") 
         fhs_public_key = fhs_client.get_public_key()
-        print("FHS Public key: %s\n" % (fhs_public_key,))
+        print("FHS Public key: %s\n" % fhs_public_key)
     
         print("### Rewrapping token")
         no_federation_fhs_token = test_utils_client.rewrap(user_token, fhs_public_key)
-        print("Token: %s\n" % (no_federation_fhs_token,))
+        print("Token: %s\n" % no_federation_fhs_token)
     
         print("### Adding new fed admin")
         response = fhs_client.add_new_fed_admin(no_federation_fhs_token, federation_admin.name, 
                                                 federation_admin.email, federation_admin.description, 
                                                 federation_admin.enabled)
-        print("Response: %s\n" % (str(response),))
+        print("Response: %s\n" % response)
     
         print("### Creating federation")
         federation_id = fhs_client.create_federation(no_federation_fhs_token, federation.name, 
                                                      federation.metadata, federation.description, federation.enabled)
-        print("Federation id: %s\n" % (federation_id,))
-        
+        print("Federation id: %s\n" % federation_id)
+
+        print("### Creating attribute")
+        attribute_id = fhs_client.create_attribute(no_federation_fhs_token, federation_id, "attributeName")
+        print("Attribute id: %s\n" % attribute_id)
+
+        print("### Getting attributes")
+        response = fhs_client.get_attributes(no_federation_fhs_token, federation_id)
+        print(response)
+        print()
+
+        service_owner_attribute_id = None
+        for attribute_map in response:
+            if attribute_map["name"] == "serviceOwner":
+                service_owner_attribute_id = attribute_map["id"]
+
         print("### Granting membership")
         response = fhs_client.grant_membership(no_federation_fhs_token, federation_id, 
                                                federation_admin.name, federation_admin.email, 
                                                federation_admin.description, federation_admin.enabled)
-        print("Member id: %s\n" % (str(response),))
-        
+        member_id = response["memberId"]
+        print("Member id: %s\n" % member_id)
+
+        print("### Granting attribute")
+        response = fhs_client.grant_attribute(no_federation_fhs_token, federation_id, member_id,
+                                              service_owner_attribute_id)
+        print(response)
+        print()
+
+        print("### Listing members")
+        response = fhs_client.list_members(no_federation_fhs_token, federation_id)
+        print(response)
+        print()
+
+        # print("### Revoking attribute")
+        # response = fhs_client.revoke_attribute(no_federation_fhs_token, federation_id, member_id, attribute_id)
+        # print(response)
+
+        print("### Listing members")
+        response = fhs_client.list_members(no_federation_fhs_token, federation_id)
+        print(response)
+        print()
+
         print("### Registering services")
         get_version_service_id = fhs_client.register_service(no_federation_fhs_token, federation_id, 
                                                              ras_get_version.owner, ras_get_version.endpoint, 
@@ -442,7 +556,7 @@ class Test1(FHSTest):
                                              {"Content-Type": "application/json",
                                               "Fogbow-User-Token": federated_fhs_token},
                                              {})
-        print("Response: %s\n" % (str(response),))
+        print("Response: %s\n" % str(response))
         
         print("### Invoking get clouds")
         response = fhs_client.invoke_service(no_federation_fhs_token, federation_id, 
@@ -450,7 +564,7 @@ class Test1(FHSTest):
                                              {"Content-Type": "application/json",
                                               "Fogbow-User-Token": federated_fhs_token},
                                              {})
-        print("Response: %s\n" % (str(response),))
+        print("Response: %s\n" % str(response))
         
         clouds_list = get_content_from_response(response)["clouds"]
         cloud_name = clouds_list[0]
@@ -461,7 +575,7 @@ class Test1(FHSTest):
                                              {"Content-Type": "application/json",
                                               "Fogbow-User-Token": federated_fhs_token},
                                              {})
-        print("Response: %s" % (str(response),))
+        print("Response: %s" % str(response))
         
         images_list = get_content_from_response(response)
         
@@ -489,14 +603,14 @@ class Test1(FHSTest):
                                              {"Content-Type": "application/json",
                                               "Fogbow-User-Token": federated_fhs_token},
                                              create_network_body)
-        print("Response: %s" % (str(response),))
+        print("Response: %s" % str(response))
         
         network_id = get_content_from_response(response)["id"]
         
         self.wait_until_network_is_ready(fhs_client, no_federation_fhs_token, 
                                          federated_fhs_token, federation_id,
                                          networks_service_id, network_id)
-        print("network is ready")
+        print("network is ready\n")
         
         print("### Invoking create compute")
         
@@ -521,7 +635,7 @@ class Test1(FHSTest):
                                              {"Content-Type": "application/json",
                                               "Fogbow-User-Token": federated_fhs_token},
                                              create_compute_body)
-        print("Response: %s" % (str(response),))
+        print("Response: %s" % str(response))
         
         compute_id = get_content_from_response(response)["id"]
 
@@ -529,7 +643,7 @@ class Test1(FHSTest):
                                          federated_fhs_token, federation_id,
                                          computes_service_id, compute_id)
                 
-        print("compute is ready")
+        print("compute is ready\n")
         
         print("### Invoking delete compute")
         
@@ -538,9 +652,9 @@ class Test1(FHSTest):
                                              {"Content-Type": "application/json",
                                               "Fogbow-User-Token": federated_fhs_token},
                                              {})
-        print("Response: %s" % (str(response),))
+        print("Response: %s" % str(response))
         
-        print("------ Waiting for compute deletion")
+        print("------ Waiting for compute deletion\n")
 
         self.wait_for_compute_deletion(fhs_client, no_federation_fhs_token, 
                                        federated_fhs_token, federation_id,
@@ -553,7 +667,7 @@ class Test1(FHSTest):
                                              {"Content-Type": "application/json",
                                               "Fogbow-User-Token": federated_fhs_token},
                                              {})
-        print("Response: %s" % (str(response),))
+        print("Response: %s\n" % str(response))
 
 
 class TestRunner:
