@@ -4,6 +4,8 @@ fhs_test.conf
 .pydevproject
 *.log
 .idea/
+.tox/
+*.egg-info/
 __pycache__/
 env/
 conf/

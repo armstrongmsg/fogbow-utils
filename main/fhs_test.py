@@ -686,8 +686,8 @@ class TestRunner:
         test_utils_client = TestUtilsClient(configuration.fogbow_ip, configuration.test_utils_port)
 
         Test1().run(as_client, fhs_client, test_utils_client, configuration)
-
-
-if __name__ == "__main__":
-    TestRunner()
-    
+#
+#
+# if __name__ == "__main__":
+#     TestRunner()
+#
