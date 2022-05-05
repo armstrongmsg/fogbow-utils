@@ -34,7 +34,7 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'test=main.main:main',
+            'test=utils.main:main',
         ],
     },
 )
