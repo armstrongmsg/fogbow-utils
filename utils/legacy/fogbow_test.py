@@ -1,11 +1,12 @@
 import configparser
 
-import fogbow_client
-import fogbow_tools
-
 from shutil import copy2
 
-from tests import CloudsTestAfterReload, NetworksTest, CloudsTestBeforeReload
+from utils.legacy.tests import CloudsTestAfterReload, NetworksTest, CloudsTestBeforeReload
+from utils.tools.as_bootstrap import ASBootstrap
+from utils.tools.ras_bootstrap import RASBootstrap
+from utils.clients.as_client import ASClient
+from utils.clients.ras_client import RASClient
 
 
 class TestRunner:
@@ -47,28 +48,28 @@ class TestRunner:
 
     def _start_up(self):
         print("Starting AS")
-        self.auth_service = fogbow_tools.ASBootstrap(self.as_project_base_path, self.as_env_path, self.java_home)
+        self.auth_service = ASBootstrap(self.as_project_base_path, self.as_env_path, self.java_home)
         self.auth_service.start_as()
 
-        asc = fogbow_client.ASClient(self.AS_host, self.AS_port)
+        asc = ASClient(self.AS_host, self.AS_port)
         asc.wait_until_is_active()
         print("Getting token")
         self.token = asc.tokens(self.public_key, self.username, self.password)
 
         print("Starting RAS 1")
-        self.ra_service = fogbow_tools.RASBootstrap(self.base_conf_ras_1, self.ras_project_base_path, self.ras_env_path_1,
+        self.ra_service = RASBootstrap(self.base_conf_ras_1, self.ras_project_base_path, self.ras_env_path_1,
                                                     self.java_home, self.application_properties_ras_1)
         self.ra_service.start_ras()
 
-        self.rasc_1 = fogbow_client.RASClient(self.RAS_host_1, self.RAS_port_1)
+        self.rasc_1 = RASClient(self.RAS_host_1, self.RAS_port_1)
         self.rasc_1.wait_until_is_active()
 
         print("Starting RAS 2")
-        self.ra_service_2 = fogbow_tools.RASBootstrap(self.base_conf_ras_2, self.ras_project_base_path, self.ras_env_path_2,
+        self.ra_service_2 = RASBootstrap(self.base_conf_ras_2, self.ras_project_base_path, self.ras_env_path_2,
                                                       self.java_home, self.application_properties_ras_2)
         self.ra_service_2.start_ras()
 
-        self.rasc_2 = fogbow_client.RASClient(self.RAS_host_2, self.RAS_port_2)
+        self.rasc_2 = RASClient(self.RAS_host_2, self.RAS_port_2)
         self.rasc_2.wait_until_is_active()
 
     def _change_config(self):

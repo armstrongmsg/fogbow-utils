@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 import configparser
 
-from fogbow_client import RASClient
+from utils.clients.ras_client import RASClient
 
 
 class FogbowTest:

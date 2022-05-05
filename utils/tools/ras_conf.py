@@ -3,7 +3,6 @@ import configparser
 
 class RASConf:
     def __init__(self, config_file):
-        # self.project_base_path = project_base_path
         self.config = configparser.RawConfigParser()
 
         with open(config_file) as f:
