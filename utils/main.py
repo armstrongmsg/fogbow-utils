@@ -1,4 +1,4 @@
-from utils.fhs_test import *
+from utils.runner import *
 
 
 def main():

@@ -1,5 +1,4 @@
-config.conf
-fhs_test.conf
+test.conf
 .project
 .pydevproject
 *.log
