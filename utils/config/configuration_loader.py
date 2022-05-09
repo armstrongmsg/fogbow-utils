@@ -34,16 +34,37 @@ class ConfigurationLoader:
 
     def load_federation_admin(self, admin_name):
         admin_username = self.config[admin_name]["username"]
+        admin_password = self.config[admin_name]["password"]
         admin_email = self.config[admin_name]["email"]
         admin_description = self.config[admin_name]["description"]
 
-        if self.config["admin"]["enabled"] == "True":
+        if self.config[admin_name]["enabled"] == "True":
             admin_enabled = True
         else:
             admin_enabled = False
 
-        return FederationAdmin(admin_username, admin_email,
+        return FederationAdmin(admin_username, admin_password, admin_email,
                                admin_description, admin_enabled)
+
+    def load_user(self, user_name):
+        user_username = self.config[user_name]["username"]
+        user_password = self.config[user_name]["password"]
+
+        user_authentication_class_name = self.config[user_name]["authentication_class_name"]
+        user_authentication_properties = {
+            "identityPluginClassName": user_authentication_class_name
+        }
+
+        user_email = self.config[user_name]["email"]
+        user_description = self.config[user_name]["description"]
+
+        if self.config[user_name]["enabled"] == "True":
+            user_enabled = True
+        else:
+            user_enabled = False
+
+        return FederationUser(user_username, user_password, user_authentication_properties,
+                              user_email, user_description, user_enabled)
 
     def load_federation(self, federation_config_name):
         federation_name = self.config[federation_config_name]["name"]
@@ -98,8 +119,20 @@ class ConfigurationLoader:
 
 
 class FederationAdmin:
-    def __init__(self, admin_name, admin_email, admin_description, admin_enabled):
+    def __init__(self, admin_name, admin_password, admin_email, admin_description, admin_enabled):
         self.name = admin_name
+        self.password = admin_password
+        self.email = admin_email
+        self.description = admin_description
+        self.enabled = admin_enabled
+
+
+class FederationUser:
+    def __init__(self, admin_name, admin_password, authentication_properties, admin_email,
+                 admin_description, admin_enabled):
+        self.name = admin_name
+        self.password = admin_password
+        self.authentication_properties = authentication_properties
         self.email = admin_email
         self.description = admin_description
         self.enabled = admin_enabled

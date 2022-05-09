@@ -11,7 +11,7 @@ class FHSClient:
         public_key_response = requests.request("GET", public_key_endpoint)
         return public_key_response.json()["publicKey"]
 
-    def add_new_fed_admin(self, token, name, email, description, enabled):
+    def add_new_fed_admin(self, token, name, email, description, enabled, authentication_properties):
         add_new_fed_admin_endpoint = self.fhs_url + "/fhs/FHSOperator/NewFedAdmin"
 
         headers = {
@@ -23,7 +23,8 @@ class FHSClient:
             "name": name,
             "email": email,
             "description": description,
-            "enabled": enabled
+            "enabled": enabled,
+            "authenticationProperties": authentication_properties
         }
 
         add_new_fed_admin_response = requests.request("POST", add_new_fed_admin_endpoint,
@@ -83,7 +84,7 @@ class FHSClient:
 
         return create_federation_response.json()
 
-    def grant_membership(self, token, federation_id, username, email, description, enabled):
+    def grant_membership(self, token, federation_id, username, authentication_properties, email, description, enabled):
         grant_membership_endpoint = self.fhs_url + "/fhs/Membership/" + federation_id
 
         headers = {
@@ -93,6 +94,7 @@ class FHSClient:
 
         body = {
             "name": username,
+            "authenticationProperties": authentication_properties,
             "email": email,
             "description": description,
             "enabled": enabled
@@ -192,3 +194,21 @@ class FHSClient:
                                                    headers=headers, data=json.dumps(body))
 
         return invoke_service_response.content
+
+    def login(self, federation_id, member_id, credentials):
+        login_endpoint = self.fhs_url + "/fhs/MemberLogin"
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        body = {
+            "federationId": federation_id,
+            "memberId": member_id,
+            "credentials": credentials
+        }
+
+        login_response = requests.request("POST", login_endpoint,
+                                          headers=headers, data=json.dumps(body))
+
+        return login_response.json()["token"]
