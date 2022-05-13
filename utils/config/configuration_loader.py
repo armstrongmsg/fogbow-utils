@@ -102,12 +102,12 @@ class ConfigurationLoader:
     def load_service(self, service_name):
         service_owner = self.config[service_name]["owner"]
         service_endpoint = self.config[service_name]["endpoint"]
-        service_type = self.config[service_name]["type"]
         service_invoker_class_name = self.config[service_name]["invoker"]
         service_access_policy_rules = self.config[service_name]["access_rules"]
+        service_public_key_endpoint = self.config[service_name]["service_public_key_endpoint"]
 
         service_metadata = {
-            "serviceType": service_type,
+            "servicePublicKeyEndpoint": service_public_key_endpoint,
             "invokerClassName": service_invoker_class_name,
             "accessPolicyRules": service_access_policy_rules
         }
