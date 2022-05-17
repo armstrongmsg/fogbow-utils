@@ -34,7 +34,7 @@ class Test2(FHSTest):
             "password": self.configuration.password
         }
 
-        fhs_operator_token = self.fhs_client.login(None, "armstrongmsg", credentials_fhs_operator)
+        fhs_operator_token = self.fhs_client.login_operator("armstrongmsg", credentials_fhs_operator)
 
         print("### Getting fhs public key")
         fhs_public_key = self.fhs_client.get_public_key()
@@ -61,7 +61,7 @@ class Test2(FHSTest):
             "password": federation_admin.password
         }
 
-        fed_admin_1_token = self.fhs_client.login(None, fed_admin_id, credentials_fed_amin)
+        fed_admin_1_token = self.fhs_client.login_federation_admin(fed_admin_id, credentials_fed_amin)
 
         rewrap_fed_admin_1_token = self.test_utils_client.rewrap(fed_admin_1_token, fhs_public_key)
         print("Token: %s\n" % rewrap_fed_admin_1_token)

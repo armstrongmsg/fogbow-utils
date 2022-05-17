@@ -212,3 +212,37 @@ class FHSClient:
                                           headers=headers, data=json.dumps(body))
 
         return login_response.json()["token"]
+
+    def login_operator(self, operator_id, credentials):
+        login_operator_endpoint = self.fhs_url + "/fhs/FHSOperator/Login"
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        body = {
+            "operatorId": operator_id,
+            "credentials": credentials
+        }
+
+        login_response = requests.request("POST", login_operator_endpoint,
+                                          headers=headers, data=json.dumps(body))
+
+        return login_response.json()["token"]
+
+    def login_federation_admin(self, federation_admin_id, credentials):
+        login_federation_admin_endpoint = self.fhs_url + "/fhs/MemberLogin/FedAdmin"
+
+        headers = {
+            "Content-Type": "application/json"
+        }
+
+        body = {
+            "federationAdminId": federation_admin_id,
+            "credentials": credentials
+        }
+
+        login_response = requests.request("POST", login_federation_admin_endpoint,
+                                          headers=headers, data=json.dumps(body))
+
+        return login_response.json()["token"]
