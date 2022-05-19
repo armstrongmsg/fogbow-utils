@@ -103,7 +103,11 @@ class ConfigurationLoader:
         service_owner = self.config[service_name]["owner"]
         service_endpoint = self.config[service_name]["endpoint"]
         service_invoker_class_name = self.config[service_name]["invoker"]
-        service_access_policy_rules = self.config[service_name]["access_rules"]
+        service_access_policy_rules_file_name = self.config[service_name]["access_rules_file_name"]
+
+        with open(service_access_policy_rules_file_name) as service_access_policy_rules_file:
+            service_access_policy_rules = "".join(service_access_policy_rules_file.readlines())
+
         service_public_key_endpoint = self.config[service_name]["service_public_key_endpoint"]
 
         service_metadata = {
