@@ -100,3 +100,27 @@ class FHSTest(FogbowTest):
                 return False
 
         return True
+
+    def wait_for_network_deletion(self, fhs_client, no_federation_fhs_token,
+                                  federated_fhs_token, federation_id,
+                                  networks_service_id, network_id):
+        while not self._check_if_network_was_deleted(fhs_client, no_federation_fhs_token,
+                                                     federated_fhs_token, federation_id,
+                                                     networks_service_id, network_id):
+            time.sleep(2)
+
+    def _check_if_network_was_deleted(self, fhs_client, no_federation_fhs_token,
+                                      federated_fhs_token, federation_id,
+                                      networks_service_id, network_id):
+        response = fhs_client.invoke_service(no_federation_fhs_token, federation_id,
+                                             networks_service_id, "GET", ["status"],
+                                             {"Content-Type": "application/json",
+                                              "Fogbow-User-Token": federated_fhs_token},
+                                             {})
+        networks = get_content_from_response(response)
+
+        for network in networks:
+            if network["instanceId"] == network_id:
+                return False
+
+        return True

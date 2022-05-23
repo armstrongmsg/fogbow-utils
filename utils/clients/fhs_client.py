@@ -32,6 +32,12 @@ class FHSClient:
 
         return add_new_fed_admin_response.json()["memberId"]
 
+    #
+    #
+    # Federation
+    #
+    #
+
     def create_federation(self, token, name, metadata, description, enabled):
         create_federation_endpoint = self.fhs_url + "/fhs/Federation"
 
@@ -51,6 +57,63 @@ class FHSClient:
                                                       headers=headers, data=json.dumps(body))
 
         return create_federation_response.json()["id"]
+
+    def get_federations(self, token, federation_owner):
+        get_federations_endpoint = self.fhs_url + "/fhs/Federation"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "owner": federation_owner
+        }
+
+        get_federations_response = requests.request("GET", get_federations_endpoint,
+                                                    headers=headers, data=json.dumps(body))
+
+        return get_federations_response.json()
+
+    def get_federation_info(self, token, federation_id, federation_owner):
+        get_federation_info_endpoint = self.fhs_url + "/fhs/Federation/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "owner": federation_owner
+        }
+
+        get_federation_info_response = requests.request("GET", get_federation_info_endpoint,
+                                                        headers=headers, data=json.dumps(body))
+
+        return get_federation_info_response.json()
+
+    def delete_federation(self, token, federation_id, federation_owner):
+        delete_federation_endpoint = self.fhs_url + "/fhs/Federation/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "owner": federation_owner
+        }
+
+        delete_federation_response = requests.request("DELETE", delete_federation_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return delete_federation_response.status_code
+
+    #
+    #
+    # Attribute
+    #
+    #
 
     def create_attribute(self, token, federation_id, attribute_name):
         create_attribute_endpoint = self.fhs_url + "/fhs/Attributes/" + federation_id
@@ -83,6 +146,28 @@ class FHSClient:
                                                       headers=headers, data=json.dumps(body))
 
         return create_federation_response.json()
+
+    def delete_attribute(self, token, federation_id, attribute_id):
+        delete_attribute_endpoint = self.fhs_url + "/fhs/Attributes/" + \
+                                     federation_id + "/" + attribute_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        delete_attribute_response = requests.request("DELETE", delete_attribute_endpoint,
+                                                     headers=headers, data=json.dumps(body))
+
+        return delete_attribute_response.status_code
+
+    #
+    #
+    # Membership
+    #
+    #
 
     def grant_membership(self, token, federation_id, username, authentication_properties, email, description, enabled):
         grant_membership_endpoint = self.fhs_url + "/fhs/Membership/" + federation_id
@@ -120,6 +205,22 @@ class FHSClient:
 
         return list_members_response.json()
 
+    def revoke_membership(self, token, federation_id, member_id):
+        revoke_membership_endpoint = self.fhs_url + "/fhs/Membership/" + \
+                                     federation_id + "/" + member_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        revoke_membership_response = requests.request("DELETE", revoke_membership_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return revoke_membership_response.status_code
+
     def grant_attribute(self, token, federation_id, member_id, attribute_id):
         grant_attribute_endpoint = self.fhs_url + "/fhs/Authorization/" + \
                                    federation_id + "/" + member_id + "/" + attribute_id
@@ -152,6 +253,12 @@ class FHSClient:
 
         return revoke_attribute_response.status_code
 
+    #
+    #
+    # Service
+    #
+    #
+
     def register_service(self, token, federation_id, owner_id, endpoint, metadata,
                          discovery_policy, access_policy):
         register_service_endpoint = self.fhs_url + "/fhs/Services/" + federation_id
@@ -174,6 +281,80 @@ class FHSClient:
 
         return register_service_response.json()["serviceId"]
 
+    def get_services(self, token, federation_id, owner_id):
+        get_services_endpoint = self.fhs_url + "/fhs/Services/" + federation_id + "/" + owner_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        get_services_response = requests.request("GET", get_services_endpoint,
+                                                 headers=headers, data=json.dumps(body))
+
+        return get_services_response.json()
+
+    def get_service(self, token, federation_id, owner_id, service_id):
+        get_service_endpoint = self.fhs_url + "/fhs/Services/" + \
+                               federation_id + "/" + owner_id + "/" + service_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        get_service_response = requests.request("GET", get_service_endpoint,
+                                                headers=headers, data=json.dumps(body))
+
+        return get_service_response.json()
+
+    def update_service(self, token, federation_id, owner_id, service_id, metadata,
+                       discovery_policy, access_policy):
+        update_service_endpoint = self.fhs_url + "/fhs/Services/" + \
+                               federation_id + "/" + owner_id + "/" + service_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "metadata": metadata,
+            "discoveryPolicy": discovery_policy,
+            "accessPolicy": access_policy
+        }
+
+        update_service_response = requests.request("PUT", update_service_endpoint,
+                                                   headers=headers, data=json.dumps(body))
+
+        return update_service_response.status_code
+
+    def delete_service(self, token, federation_id, owner_id, service_id):
+        delete_service_endpoint = self.fhs_url + "/fhs/Services/" + \
+                               federation_id + "/" + owner_id + "/" + service_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        delete_service_response = requests.request("DELETE", delete_service_endpoint,
+                                                   headers=headers, data=json.dumps(body))
+
+        return delete_service_response.status_code
+
+    #
+    #
+    # Invocation
+    #
+    #
+
     def invoke_service(self, token, federation_id, service_id, method, invocation_path,
                        invocation_headers, invocation_body):
         invoke_service_endpoint = self.fhs_url + \
@@ -194,6 +375,12 @@ class FHSClient:
                                                    headers=headers, data=json.dumps(body))
 
         return invoke_service_response.content
+
+    #
+    #
+    # Authentication
+    #
+    #
 
     def login(self, federation_id, member_id, credentials):
         login_endpoint = self.fhs_url + "/fhs/MemberLogin"
