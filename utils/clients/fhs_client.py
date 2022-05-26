@@ -32,6 +32,103 @@ class FHSClient:
 
         return add_new_fed_admin_response.json()["memberId"]
 
+    def list_fed_admins(self, token):
+        list_fed_admins_endpoint = self.fhs_url + "/fhs/FHSOperator/FedAdmins"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        list_fed_admins_response = requests.request("GET", list_fed_admins_endpoint,
+                                                    headers=headers, data=json.dumps(body))
+
+        return list_fed_admins_response.json()
+
+    def update_fed_admin(self, token, member_id, member_name, email, description, enabled):
+        update_fed_admin_endpoint = self.fhs_url + "/fhs/FHSOperator/FedAdmin/" + member_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "memberName": member_name,
+            "email": email,
+            "description": description,
+            "enabled": enabled
+        }
+
+        update_fed_admin_response = requests.request("PUT", update_fed_admin_endpoint,
+                                                     headers=headers, data=json.dumps(body))
+
+        return update_fed_admin_response.status_code
+
+    def delete_fed_admin(self, token, member_id):
+        delete_fed_admin_endpoint = self.fhs_url + "/fhs/FHSOperator/FedAdmin/" + member_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        delete_fed_admin_response = requests.request("DELETE", delete_fed_admin_endpoint,
+                                                     headers=headers, data=json.dumps(body))
+
+        return delete_fed_admin_response.status_code
+
+    def list_federation_instances(self, token):
+        list_federation_instances_endpoint = self.fhs_url + "/fhs/FHSOperator/FedInstances"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        list_federation_instances_response = requests.request("GET", list_federation_instances_endpoint,
+                                                              headers=headers, data=json.dumps(body))
+
+        return list_federation_instances_response.json()
+
+    def update_federation(self, token, federation_id, enabled):
+        update_federation_endpoint = self.fhs_url + "/fhs/FHSOperator/FedInstance/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "enabled": enabled
+        }
+
+        update_federation_response = requests.request("PUT", update_federation_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return update_federation_response.json()
+
+    def delete_federation_instance(self, token, federation_id):
+        delete_federation_endpoint = self.fhs_url + "/fhs/FHSOperator/FedInstance/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        delete_federation_response = requests.request("PUT", delete_federation_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return delete_federation_response.json()
+
     #
     #
     # Federation

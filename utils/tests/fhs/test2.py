@@ -418,3 +418,33 @@ class Test2(FHSTest):
         response = self.fhs_client.get_federations(rewrap_fed_admin_1_token, fed_admin_id)
         print("Response: %s\n" % str(response))
         print()
+
+        #
+        # Checking fed admins
+        #
+
+        print("Checking fed admins")
+
+        response = self.fhs_client.list_fed_admins(rewrap_fhs_operator_token)
+        print("Response: %s\n" % str(response))
+        print()
+
+        #
+        # Removing fed admin
+        #
+
+        print("Removing fed admin")
+
+        response = self.fhs_client.delete_fed_admin(rewrap_fhs_operator_token, fed_admin_id)
+        print("Response: %s\n" % str(response))
+        print()
+
+        #
+        # Checking fed admin deletion
+        #
+
+        print("Checking fed admin deletion")
+
+        response = self.fhs_client.list_fed_admins(rewrap_fhs_operator_token)
+        print("Response: %s\n" % str(response))
+        print()
