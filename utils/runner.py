@@ -5,6 +5,8 @@ from utils.config.configuration_loader import ConfigurationLoader
 
 from utils.tests.fhs.test1 import Test1
 from utils.tests.fhs.test2 import Test2
+from utils.tests.fhs.test_db_before import TestDBBefore
+from utils.tests.fhs.test_db_after import TestDBAfter
 
 
 class TestRunner:
@@ -15,4 +17,5 @@ class TestRunner:
         fhs_client = FHSClient(configuration.fogbow_ip, configuration.fhs_port)
         test_utils_client = TestUtilsClient(configuration.fogbow_ip, configuration.test_utils_port)
 
-        Test2(as_client, fhs_client, test_utils_client, configuration).test()
+        # TestDBBefore(as_client, fhs_client, test_utils_client, configuration).test()
+        TestDBAfter(as_client, fhs_client, test_utils_client, configuration).test()
