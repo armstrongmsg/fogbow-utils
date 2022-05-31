@@ -31,6 +31,7 @@ class ConfigurationLoader:
         self.compute_user_data_file_type = \
             self.config["conf"]["compute_user_data_file_type"]
         self.compute_user_data_tag = self.config["conf"]["compute_user_data_tag"]
+        self.test_classes = self.config["conf"]["test_classes"].split(",")
 
     def load_federation_admin(self, admin_name):
         admin_username = self.config[admin_name]["username"]

@@ -40,6 +40,10 @@ class TestDBAfter(FHSTest):
 
         fed_admin_id = response[0]["memberId"]
 
+        response = self.fhs_client.list_federation_instances(rewrap_fhs_operator_token)
+        print("Response: %s\n" % str(response))
+        print()
+
         credentials_fed_amin = {
             "userPublicKey": self.configuration.user_public_key,
             "username": federation_admin.name,
@@ -56,6 +60,14 @@ class TestDBAfter(FHSTest):
         print()
 
         federation_id = response[0]["id"]
+
+        response = self.fhs_client.get_federation_info(rewrap_fed_admin_1_token, federation_id, fed_admin_id)
+        print("Response: %s\n" % str(response))
+        print()
+
+        response = self.fhs_client.get_attributes(rewrap_fed_admin_1_token, federation_id)
+        print("Response: %s\n" % str(response))
+        print()
 
         print("Checking members")
         response = self.fhs_client.list_members(rewrap_fed_admin_1_token, federation_id)
