@@ -9,6 +9,12 @@ def get_content_from_response(response):
 
 
 class FHSTest(FogbowTest):
+    def __init__(self, as_client, fhs_client, test_utils_client, configuration):
+        self.as_client = as_client
+        self.fhs_client = fhs_client
+        self.test_utils_client = test_utils_client
+        self.configuration = configuration
+
     def cleanup(self):
         pass
 
@@ -124,3 +130,54 @@ class FHSTest(FogbowTest):
                 return False
 
         return True
+
+    def _get_fhs_operator_token(self):
+        print("### Getting token")
+
+        credentials_fhs_operator = {
+            "userPublicKey": self.configuration.user_public_key,
+            "username": self.configuration.username,
+            "password": self.configuration.password
+        }
+
+        # FIXME constant
+        fhs_operator_token = self.fhs_client.login_operator("armstrongmsg", credentials_fhs_operator)
+
+        print("### Getting fhs public key")
+        fhs_public_key = self.fhs_client.get_public_key()
+        print("FHS Public key: %s\n" % fhs_public_key)
+
+        print("### Rewrapping token")
+        rewrap_fhs_operator_token = self.test_utils_client.rewrap(fhs_operator_token, fhs_public_key)
+        print("Token: %s\n" % rewrap_fhs_operator_token)
+
+        return rewrap_fhs_operator_token
+
+    def _get_federation_admin_token(self, fed_admin_id, federation_admin_name, federation_admin_password):
+        credentials_fed_amin = {
+            "userPublicKey": self.configuration.user_public_key,
+            "username": federation_admin_name,
+            "password": federation_admin_password
+        }
+
+        fed_admin_1_token = self.fhs_client.login_federation_admin(fed_admin_id, credentials_fed_amin)
+
+        fhs_public_key = self.fhs_client.get_public_key()
+        rewrap_fed_admin_1_token = self.test_utils_client.rewrap(fed_admin_1_token, fhs_public_key)
+        print("Token: %s\n" % rewrap_fed_admin_1_token)
+
+        return rewrap_fed_admin_1_token
+
+    def _get_member_token(self, federation_id, member_id, username, password):
+        credentials_service_owner = {
+            "userPublicKey": self.configuration.user_public_key,
+            "username": username,
+            "password": password
+        }
+
+        member_token = self.fhs_client.login(federation_id, member_id, credentials_service_owner)
+        fhs_public_key = self.fhs_client.get_public_key()
+        rewrap_member_token = self.test_utils_client.rewrap(member_token, fhs_public_key)
+        print("Token: %s\n" % rewrap_member_token)
+
+        return rewrap_member_token

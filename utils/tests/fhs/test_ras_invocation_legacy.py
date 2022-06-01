@@ -4,10 +4,7 @@ from utils.tests.fhs.fhs_test_utils import get_content_from_response
 
 class TestRasInvocation(FHSTest):
     def __init__(self, as_client, fhs_client, test_utils_client, configuration):
-        self.as_client = as_client
-        self.fhs_client = fhs_client
-        self.test_utils_client = test_utils_client
-        self.configuration = configuration
+        super().__init__(as_client, fhs_client, test_utils_client, configuration)
 
     def cleanup(self):
         pass

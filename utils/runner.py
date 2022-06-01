@@ -15,4 +15,6 @@ class TestRunner:
 
         for test_class_name in configuration.test_classes:
             test_class = test_loader.load(test_class_name)
+            print("Running test %s" % test_class.get_test_name())
             test_class.test()
+            test_class.cleanup()

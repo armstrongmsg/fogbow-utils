@@ -3,10 +3,7 @@ from utils.tests.fhs.fhs_test_utils import FHSTest
 
 class TestDBAddDataAfterShutdown(FHSTest):
     def __init__(self, as_client, fhs_client, test_utils_client, configuration):
-        self.as_client = as_client
-        self.fhs_client = fhs_client
-        self.test_utils_client = test_utils_client
-        self.configuration = configuration
+        super().__init__(as_client, fhs_client, test_utils_client, configuration)
 
     def cleanup(self):
         pass
@@ -30,22 +27,7 @@ class TestDBAddDataAfterShutdown(FHSTest):
         #
 
         print("### Getting token")
-
-        credentials_fhs_operator = {
-            "userPublicKey": self.configuration.user_public_key,
-            "username": self.configuration.username,
-            "password": self.configuration.password
-        }
-
-        fhs_operator_token = self.fhs_client.login_operator("armstrongmsg", credentials_fhs_operator)
-
-        print("### Getting fhs public key")
-        fhs_public_key = self.fhs_client.get_public_key()
-        print("FHS Public key: %s\n" % fhs_public_key)
-
-        print("### Rewrapping token")
-        rewrap_fhs_operator_token = self.test_utils_client.rewrap(fhs_operator_token, fhs_public_key)
-        print("Token: %s\n" % rewrap_fhs_operator_token)
+        rewrap_fhs_operator_token = self._get_fhs_operator_token()
 
         #
         # Federation admin creation and authentication
@@ -62,16 +44,8 @@ class TestDBAddDataAfterShutdown(FHSTest):
         print("Response: %s\n" % response)
         fed_admin_id = response
 
-        credentials_fed_amin = {
-            "userPublicKey": self.configuration.user_public_key,
-            "username": federation_admin_2.name,
-            "password": federation_admin_2.password
-        }
-
-        fed_admin_1_token = self.fhs_client.login_federation_admin(fed_admin_id, credentials_fed_amin)
-
-        rewrap_fed_admin_1_token = self.test_utils_client.rewrap(fed_admin_1_token, fhs_public_key)
-        print("Token: %s\n" % rewrap_fed_admin_1_token)
+        rewrap_fed_admin_1_token = self._get_federation_admin_token(fed_admin_id, federation_admin_2.name,
+                                                                    federation_admin_2.password)
 
         #
         # Federation creation
@@ -138,16 +112,8 @@ class TestDBAddDataAfterShutdown(FHSTest):
         # Registering services
         #
 
-        credentials_service_owner = {
-            "userPublicKey": self.configuration.user_public_key,
-            "username": service_owner_2.name,
-            "password": service_owner_2.password
-        }
-
-        service_owner_1_token = self.fhs_client.login(federation_id, service_owner_id, credentials_service_owner)
-
-        rewrap_service_owner_1_token = self.test_utils_client.rewrap(service_owner_1_token, fhs_public_key)
-        print("Token: %s\n" % rewrap_service_owner_1_token)
+        rewrap_service_owner_1_token = self._get_member_token(federation_id, service_owner_id, service_owner_2.name,
+                                                              service_owner_2.password)
 
         print("### Registering services")
         get_version_service_id = self.fhs_client.register_service(rewrap_service_owner_1_token, federation_id,
@@ -206,13 +172,5 @@ class TestDBAddDataAfterShutdown(FHSTest):
         common_user_1_id = response["memberId"]
         print("Member id: %s\n" % common_user_1_id)
 
-        credentials_common_user_1 = {
-            "userPublicKey": self.configuration.user_public_key,
-            "username": common_user_1.name,
-            "password": common_user_1.password
-        }
-
-        common_user_1_token = self.fhs_client.login(federation_id, common_user_1_id, credentials_common_user_1)
-
-        rewrap_common_user_1_token = self.test_utils_client.rewrap(common_user_1_token, fhs_public_key)
-        print("Token: %s\n" % rewrap_common_user_1_token)
+        rewrap_common_user_1_token = self._get_member_token(federation_id, common_user_1_id, common_user_1.name,
+                                                            common_user_1.password)
