@@ -1,8 +1,7 @@
-from utils.tests.fhs.test1 import Test1
-from utils.tests.fhs.test2 import Test2
-from utils.tests.fhs.test_db_before import TestDBBefore
-from utils.tests.fhs.test_db_after import TestDBAfter
-from utils.tests.fhs.test_db_after2 import TestDBAfter2
+from utils.tests.fhs.test_ras_invocation import TestRasInvocation
+from utils.tests.fhs.test_db_set_up_data import TestDBSetUpData
+from utils.tests.fhs.test_db_check_data_after_shutdown import TestDBCheckDataAfterShutdown
+from utils.tests.fhs.test_db_add_data_after_shutdown import TestDBAddDataAfterShutdown
 
 
 class TestLoader:
@@ -15,16 +14,16 @@ class TestLoader:
     def load(self, test_name):
         # TODO add class loading code
 
-        if test_name == "Test1":
-            test = Test1(self.as_client, self.fhs_client, self.test_utils_client, self.configuration)
-        elif test_name == "Test2":
-            test = Test2(self.as_client, self.fhs_client, self.test_utils_client, self.configuration)
-        elif test_name == "TestDBBefore":
-            test = TestDBBefore(self.as_client, self.fhs_client, self.test_utils_client, self.configuration)
-        elif test_name == "TestDBAfter":
-            test = TestDBAfter(self.as_client, self.fhs_client, self.test_utils_client, self.configuration)
-        elif test_name == "TestDBAfter2":
-            test = TestDBAfter2(self.as_client, self.fhs_client, self.test_utils_client, self.configuration)
+        if test_name == "TestRasInvocation":
+            test = TestRasInvocation(self.as_client, self.fhs_client, self.test_utils_client, self.configuration)
+        elif test_name == "TestDBSetUpData":
+            test = TestDBSetUpData(self.as_client, self.fhs_client, self.test_utils_client, self.configuration)
+        elif test_name == "TestDBCheckDataAfterShutdown":
+            test = TestDBCheckDataAfterShutdown(self.as_client, self.fhs_client, self.test_utils_client,
+                                                self.configuration)
+        elif test_name == "TestDBAddDataAfterShutdown":
+            test = TestDBAddDataAfterShutdown(self.as_client, self.fhs_client, self.test_utils_client,
+                                              self.configuration)
         else:
             raise Exception("Invalid test class")
 

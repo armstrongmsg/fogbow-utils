@@ -1,7 +1,7 @@
 from utils.tests.fhs.fhs_test_utils import FHSTest
 
 
-class TestDBAfter(FHSTest):
+class TestDBCheckDataAfterShutdown(FHSTest):
     def __init__(self, as_client, fhs_client, test_utils_client, configuration):
         self.as_client = as_client
         self.fhs_client = fhs_client
@@ -12,7 +12,7 @@ class TestDBAfter(FHSTest):
         pass
 
     def get_test_name(self):
-        return "TestDBAfter"
+        return "TestDBAfterShutdown"
     
     def test(self):
         federation_admin = self.configuration.load_federation_admin("admin")
