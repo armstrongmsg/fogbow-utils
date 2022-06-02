@@ -131,17 +131,18 @@ class FHSTest(FogbowTest):
 
         return True
 
-    def _get_fhs_operator_token(self):
+    def _get_fhs_operator_token(self, operator_name):
         print("### Getting token")
 
+        operator = self.configuration.load_fhs_operator(operator_name)
+
         credentials_fhs_operator = {
-            "userPublicKey": self.configuration.user_public_key,
-            "username": self.configuration.username,
-            "password": self.configuration.password
+            "userPublicKey": operator.public_key,
+            "username": operator.username,
+            "password": operator.password
         }
 
-        # FIXME constant
-        fhs_operator_token = self.fhs_client.login_operator("armstrongmsg", credentials_fhs_operator)
+        fhs_operator_token = self.fhs_client.login_operator(operator.id, credentials_fhs_operator)
 
         print("### Getting fhs public key")
         fhs_public_key = self.fhs_client.get_public_key()

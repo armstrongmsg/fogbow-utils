@@ -27,7 +27,7 @@ class TestDBAddDataAfterShutdown(FHSTest):
         #
 
         print("### Getting token")
-        rewrap_fhs_operator_token = self._get_fhs_operator_token()
+        rewrap_fhs_operator_token = self._get_fhs_operator_token(self.configuration.operator_name_1)
 
         #
         # Federation admin creation and authentication

@@ -11,6 +11,21 @@ class FHSClient:
         public_key_response = requests.request("GET", public_key_endpoint)
         return public_key_response.json()["publicKey"]
 
+    def reload(self, token):
+        reload_endpoint = self.fhs_url + "/fhs/FHSOperator/reload"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        reload_response = requests.request("POST", reload_endpoint, headers=headers,
+                                           data=json.dumps(body))
+
+        return reload_response
+
     def add_new_fed_admin(self, token, name, email, description, enabled, authentication_properties):
         add_new_fed_admin_endpoint = self.fhs_url + "/fhs/FHSOperator/NewFedAdmin"
 

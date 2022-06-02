@@ -15,7 +15,7 @@ class TestDBCheckDataAfterShutdown(FHSTest):
         federation_admin = self.configuration.load_federation_admin("admin")
         service_owner_1 = self.configuration.load_user("service_owner_1")
 
-        rewrap_fhs_operator_token = self._get_fhs_operator_token()
+        rewrap_fhs_operator_token = self._get_fhs_operator_token(self.configuration.operator_name_1)
 
         response = self.fhs_client.list_fed_admins(rewrap_fhs_operator_token)
         print("Response: %s\n" % str(response))

@@ -32,6 +32,16 @@ class ConfigurationLoader:
             self.config["conf"]["compute_user_data_file_type"]
         self.compute_user_data_tag = self.config["conf"]["compute_user_data_tag"]
         self.test_classes = self.config["conf"]["test_classes"].split(",")
+        self.operator_name_1 = self.config["conf"]["operator_name_1"]
+        self.operator_name_2 = self.config["conf"]["operator_name_2"]
+
+    def load_fhs_operator(self, operator_name):
+        operator_id = self.config[operator_name]["id"]
+        operator_username = self.config[operator_name]["username"]
+        operator_password = self.config[operator_name]["password"]
+        operator_public_key = self.config[operator_name]["public_key"]
+
+        return FhsOperator(operator_id, operator_username, operator_password, operator_public_key)
 
     def load_federation_admin(self, admin_name):
         admin_username = self.config[admin_name]["username"]
@@ -121,6 +131,14 @@ class ConfigurationLoader:
 
         return FederationService(service_owner, service_endpoint, service_metadata,
                                  service_discovery_policy, service_access_policy)
+
+
+class FhsOperator:
+    def __init__(self, operator_id, operator_username, operator_password, operator_public_key):
+        self.id = operator_id
+        self.username = operator_username
+        self.password = operator_password
+        self.public_key = operator_public_key
 
 
 class FederationAdmin:
