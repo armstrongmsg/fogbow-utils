@@ -13,6 +13,7 @@ class ConfigurationLoader:
         self.fogbow_ip = self.config["conf"]["fogbow_ip"]
         self.as_port = self.config["conf"]["as_port"]
         self.fhs_port = self.config["conf"]["fhs_port"]
+        self.fhs_port_2 = self.config["conf"]["fhs_port_2"]
         self.test_utils_port = self.config["conf"]["test_utils_port"]
         self.provider = self.config["conf"]["provider"]
 

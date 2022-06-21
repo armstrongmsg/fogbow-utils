@@ -221,6 +221,21 @@ class FHSClient:
 
         return delete_federation_response.status_code
 
+    def get_remote_federation_list(self, token):
+        get_remote_federation_list_endpoint = self.fhs_url + "/fhs/Federation/Query"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        get_remote_federation_list_response = requests.request("GET", get_remote_federation_list_endpoint,
+                                                               headers=headers, data=json.dumps(body))
+
+        return get_remote_federation_list_response.json()
+
     #
     #
     # Attribute

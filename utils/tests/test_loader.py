@@ -3,6 +3,7 @@ from utils.tests.fhs.test_db_set_up_data import TestDBSetUpData
 from utils.tests.fhs.test_db_check_data_after_shutdown import TestDBCheckDataAfterShutdown
 from utils.tests.fhs.test_db_add_data_after_shutdown import TestDBAddDataAfterShutdown
 from utils.tests.fhs.test_reload import TestReload
+from utils.tests.fhs.test_multi_fhs import TestMultiFHS
 
 
 class TestLoader:
@@ -28,6 +29,9 @@ class TestLoader:
         elif test_name == "TestReload":
             test = TestReload(self.as_client, self.fhs_client, self.test_utils_client,
                               self.configuration)
+        elif test_name == "TestMultiFHS":
+            test = TestMultiFHS(self.as_client, self.fhs_client, self.test_utils_client,
+                                self.configuration)
         else:
             raise Exception("Invalid test class")
 
