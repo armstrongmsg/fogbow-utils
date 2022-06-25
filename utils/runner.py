@@ -1,8 +1,12 @@
 from utils.clients.as_client import ASClient
 from utils.clients.fhs_client import FHSClient
+from utils.tools.logger import Log
 from utils.clients.test_utils_client import TestUtilsClient
 from utils.config.configuration_loader import ConfigurationLoader
 from utils.tests.test_loader import TestLoader
+
+
+LOGGER = Log("TestLog", "test.log")
 
 
 class TestRunner:
@@ -15,6 +19,15 @@ class TestRunner:
 
         for test_class_name in configuration.test_classes:
             test_class = test_loader.load(test_class_name)
-            print("Running test %s" % test_class.get_test_name())
-            test_class.test()
-            test_class.cleanup()
+            try:
+                self._run_test(test_class)
+            except Exception:
+                print("Test execution failed.")
+
+    def _run_test(self, test):
+        print("Running test %s" % test.get_test_name())
+        try:
+            test.setup()
+            test.test()
+        finally:
+            test.cleanup()

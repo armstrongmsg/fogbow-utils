@@ -36,6 +36,16 @@ class ConfigurationLoader:
         self.operator_name_1 = self.config["conf"]["operator_name_1"]
         self.operator_name_2 = self.config["conf"]["operator_name_2"]
 
+        self.as_build_path = self.config["conf"]["as_build_path"]
+        self.ras_build_path = self.config["conf"]["ras_build_path"]
+        self.ms_build_path = self.config["conf"]["ms_build_path"]
+        self.fhs_project_path = self.config["conf"]["fhs_project_path"]
+
+        self.fhs_name_1 = self.config["conf"]["fhs_name_1"]
+        self.fhs_name_2 = self.config["conf"]["fhs_name_2"]
+
+        self.fhs_bootstrap_workspace = self.config["conf"]["fhs_bootstrap_workspace"]
+
     def load_fhs_operator(self, operator_name):
         operator_id = self.config[operator_name]["id"]
         operator_username = self.config[operator_name]["username"]

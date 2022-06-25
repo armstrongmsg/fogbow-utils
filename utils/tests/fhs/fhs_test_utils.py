@@ -1,7 +1,11 @@
 from utils.tests.tests import FogbowTest
+from utils.tools.logger import Log
 
 import json
 import time
+
+
+LOGGER = Log("TestLog", "test.log")
 
 
 def get_content_from_response(response):
@@ -14,6 +18,9 @@ class FHSTest(FogbowTest):
         self.fhs_client = fhs_client
         self.test_utils_client = test_utils_client
         self.configuration = configuration
+
+    def setup(self):
+        pass
 
     def cleanup(self):
         pass
@@ -132,7 +139,7 @@ class FHSTest(FogbowTest):
         return True
 
     def _get_fhs_operator_token(self, operator_name):
-        print("### Getting token")
+        LOGGER.log("### Getting token")
 
         operator = self.configuration.load_fhs_operator(operator_name)
 
@@ -144,13 +151,13 @@ class FHSTest(FogbowTest):
 
         fhs_operator_token = self.fhs_client.login_operator(operator.id, credentials_fhs_operator)
 
-        print("### Getting fhs public key")
+        LOGGER.log("### Getting fhs public key")
         fhs_public_key = self.fhs_client.get_public_key()
-        print("FHS Public key: %s\n" % fhs_public_key)
+        LOGGER.log("FHS Public key: %s\n" % fhs_public_key)
 
-        print("### Rewrapping token")
+        LOGGER.log("### Rewrapping token")
         rewrap_fhs_operator_token = self.test_utils_client.rewrap(fhs_operator_token, fhs_public_key)
-        print("Token: %s\n" % rewrap_fhs_operator_token)
+        LOGGER.log("Token: %s\n" % rewrap_fhs_operator_token)
 
         return rewrap_fhs_operator_token
 
@@ -165,7 +172,7 @@ class FHSTest(FogbowTest):
 
         fhs_public_key = self.fhs_client.get_public_key()
         rewrap_fed_admin_1_token = self.test_utils_client.rewrap(fed_admin_1_token, fhs_public_key)
-        print("Token: %s\n" % rewrap_fed_admin_1_token)
+        LOGGER.log("Token: %s\n" % rewrap_fed_admin_1_token)
 
         return rewrap_fed_admin_1_token
 
@@ -179,6 +186,6 @@ class FHSTest(FogbowTest):
         member_token = self.fhs_client.login(federation_id, member_id, credentials_service_owner)
         fhs_public_key = self.fhs_client.get_public_key()
         rewrap_member_token = self.test_utils_client.rewrap(member_token, fhs_public_key)
-        print("Token: %s\n" % rewrap_member_token)
+        LOGGER.log("Token: %s\n" % rewrap_member_token)
 
         return rewrap_member_token

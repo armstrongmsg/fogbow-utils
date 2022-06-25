@@ -9,3 +9,4 @@ config/
 __pycache__/
 env/
 conf/
+test_configs/

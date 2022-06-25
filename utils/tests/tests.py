@@ -5,11 +5,15 @@ class FogbowTest:
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def test(self):
+    def get_test_name(self):
         pass
 
     @abstractmethod
-    def get_test_name(self):
+    def setup(self):
+        pass
+
+    @abstractmethod
+    def test(self):
         pass
 
     @abstractmethod

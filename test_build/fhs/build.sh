@@ -1,0 +1,1 @@
+docker build --no-cache -t fogbow/federation-hosting-service:latest .

@@ -1,0 +1,13 @@
+FROM fogbow/common:latest
+
+# Adding dependencies
+ADD dependencies/fogbow-as /root/.m2/repository/fogbow/fogbow-as
+ADD dependencies/fogbow-ras /root/.m2/repository/fogbow/fogbow-ras
+ADD dependencies/fogbow-ms /root/.m2/repository/fogbow/fogbow-ms
+ADD . /root/federation-hosting-service
+
+# Define working directory.
+WORKDIR /root/federation-hosting-service
+
+RUN \
+  mvn dependency:sources
