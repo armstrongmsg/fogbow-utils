@@ -9,5 +9,5 @@ ADD . /root/federation-hosting-service
 # Define working directory.
 WORKDIR /root/federation-hosting-service
 
-RUN \
-  mvn dependency:sources
+RUN mvn dependency:sources
+RUN rm -rf /root/federation-hosting-service

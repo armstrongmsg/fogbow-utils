@@ -236,6 +236,74 @@ class FHSClient:
 
         return get_remote_federation_list_response.json()
 
+    def join_remote_federation(self, token, federation_id):
+        join_remote_federation_endpoint = self.fhs_url + "/fhs/Federation/Join/" + federation_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        join_remote_federation_response = requests.request("POST", join_remote_federation_endpoint,
+                                                           headers=headers, data=json.dumps(body))
+
+        return join_remote_federation_response.status_code
+
+    def get_join_requests(self, token):
+        get_join_requests_endpoint = self.fhs_url + "/fhs/Federation/JoinRequests"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        get_join_requests_response = requests.request("GET", get_join_requests_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+        print(get_join_requests_response.status_code)
+        return get_join_requests_response.json()
+
+    def remote_join_grant(self, token, fed_admin_id, fhs_id, federation_id):
+        remote_join_grant_endpoint = self.fhs_url + "/fhs/Federation/JoinGrant/requestId"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+        
+        body = {
+            "fedAdminId": fed_admin_id,
+            "fhsId": fhs_id,
+            "federationId": federation_id
+        }
+
+        remote_join_grant_response = requests.request("POST", remote_join_grant_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return remote_join_grant_response.status_code
+
+    def remote_join_deny(self, token, fed_admin_id, fhs_id, federation_id):
+        remote_join_deny_endpoint = self.fhs_url + "/fhs/Federation/JoinDeny/requestId"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {
+            "fedAdminId": fed_admin_id,
+            "fhsId": fhs_id,
+            "federationId": federation_id
+        }
+
+        remote_join_deny_response = requests.request("POST", remote_join_deny_endpoint,
+                                                     headers=headers, data=json.dumps(body))
+
+        return remote_join_deny_response.status_code
+
     #
     #
     # Attribute

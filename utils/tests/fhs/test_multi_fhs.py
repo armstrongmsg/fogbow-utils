@@ -62,6 +62,19 @@ class TestMultiFHS(FHSTest):
                                                           federation.enabled)
         LOGGER.log("Federation id: %s\n" % federation_id)
 
+        LOGGER.log("### Checking remote admins allowed in federation")
+
+        response = self.fhs_client.get_join_requests(rewrap_fed_admin_1_token)
+        LOGGER.log("Allowed admins: %s" % response)
+
+        LOGGER.log("### Adding allowed remote admin")
+        response = self.fhs_client.remote_join_grant(rewrap_fed_admin_1_token, "federation_admin_2",
+                                                     "member2.lsd.ufcg.edu.br", federation_id)
+        LOGGER.log("Response: %s" % response)
+
+        response = self.fhs_client.get_join_requests(rewrap_fed_admin_1_token)
+        LOGGER.log("Allowed admins: %s" % response)
+
         #
         # Starting FHS 2
         #
@@ -73,7 +86,7 @@ class TestMultiFHS(FHSTest):
         self.fhs_2.prepare_config()
         self.fhs_2.start()
 
-        federation_admin = self.configuration.load_federation_admin("admin")
+        federation_admin_2 = self.configuration.load_federation_admin("admin2")
         self.fhs_client = FHSClient(self.configuration.fogbow_ip, self.configuration.fhs_port_2)
 
         #
@@ -86,18 +99,28 @@ class TestMultiFHS(FHSTest):
         #
         LOGGER.log("### Adding new fed admin")
         # TODO constant
-        response = self.fhs_client.add_new_fed_admin(rewrap_fhs_operator_token, federation_admin.name,
-                                                     federation_admin.email, federation_admin.description,
-                                                     federation_admin.enabled,
+        response = self.fhs_client.add_new_fed_admin(rewrap_fhs_operator_token, federation_admin_2.name,
+                                                     federation_admin_2.email, federation_admin_2.description,
+                                                     federation_admin_2.enabled,
                                                      {
                                                          "identityPluginClassName":
                                 "cloud.fogbow.fhs.core.plugins.authentication.StubFederationAuthenticationPlugin"})
         LOGGER.log("Response: %s\n" % response)
         fed_admin_id = response
-        rewrap_fed_admin_1_token = self._get_federation_admin_token(fed_admin_id, federation_admin.name,
-                                                                    federation_admin.password)
+        rewrap_fed_admin_2_token = self._get_federation_admin_token(fed_admin_id, federation_admin_2.name,
+                                                                    federation_admin_2.password)
 
         LOGGER.log("Checking remote federation")
-        response = self.fhs_client.get_remote_federation_list(rewrap_fed_admin_1_token)
+        response = self.fhs_client.get_remote_federation_list(rewrap_fed_admin_2_token)
 
+        LOGGER.log("Response: %s" % str(response))
+        federation_id_to_join = response[0]["id"]
+
+        response = self.fhs_client.join_remote_federation(rewrap_fed_admin_2_token, federation_id_to_join)
+        LOGGER.log("Response: %s" % str(response))
+
+        response = self.fhs_client.get_federations(rewrap_fed_admin_2_token, federation_admin_2.name)
+        LOGGER.log("Response: %s" % str(response))
+
+        response = self.fhs_client.list_federation_instances(rewrap_fhs_operator_token)
         LOGGER.log("Response: %s" % str(response))
