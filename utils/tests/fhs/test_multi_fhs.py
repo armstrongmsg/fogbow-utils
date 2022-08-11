@@ -1,3 +1,5 @@
+import time
+
 from utils.tests.fhs.fhs_test_utils import FHSTest
 from utils.clients.fhs_client import FHSClient
 from utils.tools.fhs_bootstrap import FHSBootstrap
@@ -30,6 +32,9 @@ class TestMultiFHS(FHSTest):
     def test(self):
         federation_admin = self.configuration.load_federation_admin("admin")
         federation = self.configuration.load_federation("federation")
+        service_owner_1 = self.configuration.load_user("service_owner_1")
+        ras_get_version = self.configuration.load_service("ras_get_version")
+        common_user_1 = self.configuration.load_user("common_user_1")
 
         #
         # FhsOperator authentication
@@ -123,4 +128,69 @@ class TestMultiFHS(FHSTest):
         LOGGER.log("Response: %s" % str(response))
 
         response = self.fhs_client.list_federation_instances(rewrap_fhs_operator_token)
+        LOGGER.log("Response: %s" % str(response))
+
+        response = self.fhs_client.grant_membership(rewrap_fed_admin_2_token, federation_id_to_join,
+                                                    service_owner_1.name, service_owner_1.authentication_properties,
+                                                    service_owner_1.email, service_owner_1.description,
+                                                    service_owner_1.enabled)
+        service_owner_id = response["memberId"]
+        print("Member id: %s\n" % service_owner_id)
+
+        print("### Getting attributes")
+        response = self.fhs_client.get_attributes(rewrap_fed_admin_2_token, federation_id_to_join)
+        print(response)
+        print()
+
+        service_owner_attribute_id = None
+        for attribute_map in response:
+            if attribute_map["name"] == "serviceOwner":
+                service_owner_attribute_id = attribute_map["id"]
+
+        print("### Granting attribute")
+        response = self.fhs_client.grant_attribute(rewrap_fed_admin_2_token, federation_id_to_join, service_owner_id,
+                                                   service_owner_attribute_id)
+
+        LOGGER.log("Response: %s" % str(response))
+
+        rewrap_service_owner_1_token = self._get_member_token(federation_id_to_join, service_owner_id, service_owner_1.name,
+                                                              service_owner_1.password)
+
+        print("### Registering services")
+        get_version_service_id = self.fhs_client.register_service(rewrap_service_owner_1_token, federation_id_to_join,
+                                                                  ras_get_version.owner,
+                                                                  ras_get_version.endpoint,
+                                                                  ras_get_version.metadata,
+                                                                  ras_get_version.discovery_policy,
+                                                                  ras_get_version.access_policy)
+
+        LOGGER.log("Response: %s" % str(get_version_service_id))
+
+        time.sleep(20)
+
+        self.fhs_client = FHSClient(self.configuration.fogbow_ip, self.configuration.fhs_port)
+
+        response = self.fhs_client.list_members(rewrap_fed_admin_1_token, federation_id_to_join)
+
+        LOGGER.log("Response: %s" % str(response))
+
+        response = self.fhs_client.get_federation_info(rewrap_fed_admin_1_token, federation_id_to_join, "")
+
+        LOGGER.log("Response: %s" % str(response))
+
+        response = self.fhs_client.grant_membership(rewrap_fed_admin_1_token, federation_id_to_join,
+                                         common_user_1.name, common_user_1.authentication_properties,
+                                         common_user_1.email, common_user_1.description,
+                                         common_user_1.enabled)
+
+        LOGGER.log("Response: %s" % str(response))
+
+        common_user_1_id = response["memberId"]
+        print("Member id: %s\n" % common_user_1_id)
+
+        rewrap_common_user_1_token = self._get_member_token(federation_id, common_user_1_id, common_user_1.name,
+                                                            common_user_1.password)
+
+        response = self.fhs_client.discover_services(rewrap_common_user_1_token, federation_id_to_join, "aaa")
+
         LOGGER.log("Response: %s" % str(response))

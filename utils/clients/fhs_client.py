@@ -550,6 +550,22 @@ class FHSClient:
     #
     #
 
+    def discover_services(self, token, federation_id, member_id):
+        discover_services_endpoint = self.fhs_url + "/fhs/Discovery/" + \
+                                     federation_id + "/" + member_id
+
+        headers = {
+            "Content-Type": "application/json",
+            "Fogbow-User-Token": token
+        }
+
+        body = {}
+
+        discover_services_response = requests.request("GET", discover_services_endpoint,
+                                                      headers=headers, data=json.dumps(body))
+
+        return discover_services_response.json()
+
     def invoke_service(self, token, federation_id, service_id, method, invocation_path,
                        invocation_headers, invocation_body):
         invoke_service_endpoint = self.fhs_url + \
