@@ -1,0 +1,12 @@
+FROM fogbow/common:latest
+
+# Adding dependencies
+ADD dependencies/fogbow-as /root/.m2/repository/fogbow/fogbow-as
+ADD dependencies/fogbow-ms /root/.m2/repository/fogbow/fogbow-ms
+ADD . /root/resource-allocation-service
+
+# Define working directory.
+WORKDIR /root/resource-allocation-service
+
+RUN mvn dependency:sources
+RUN rm -rf /root/resource-allocation-service

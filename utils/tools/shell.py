@@ -73,3 +73,9 @@ class CopyDirectory(ShellCommand):
     def __init__(self, src, dest):
         super().__init__(env={}, cwd="/", stdout=sys.stdout,
                          stderr=sys.stderr, args=["cp", "-r", src, dest])
+
+
+class CreateDirectory(ShellCommand):
+    def __init__(self, directory_path):
+        super().__init__(env={}, cwd="/", stdout=sys.stdout,
+                         stderr=sys.stderr, args=["mkdir", directory_path])

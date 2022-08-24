@@ -5,6 +5,7 @@ import requests
 from utils.tools.shell import ShellCommandBuilder
 from utils.tools.shell import CopyDirectory
 from utils.tools.shell import CopyFile
+from utils.tools.shell import CreateDirectory
 from utils.tools.logger import Log
 from utils.tools.docker_utils import stop_container
 from utils.tools.docker_utils import remove_container
@@ -64,6 +65,7 @@ class FHSBootstrap:
 
     def prepare_config(self):
         LOGGER.log("Copying conf files")
+        CreateDirectory(self.conf_file_path).run().wait()
         CopyFile(os.getcwd() + "/test_configs/" + self.fhs_config + "/application.properties", self.conf_file_path).run().wait()
         CopyDirectory(os.getcwd() + "/test_configs/" + self.fhs_config + "/private", self.conf_file_path).run().wait()
 

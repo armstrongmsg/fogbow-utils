@@ -14,6 +14,7 @@ class ConfigurationLoader:
         self.as_port = self.config["conf"]["as_port"]
         self.fhs_port = self.config["conf"]["fhs_port"]
         self.fhs_port_2 = self.config["conf"]["fhs_port_2"]
+        self.ras_port = self.config["conf"]["ras_port"]
         self.test_utils_port = self.config["conf"]["test_utils_port"]
         self.provider = self.config["conf"]["provider"]
 
@@ -40,11 +41,14 @@ class ConfigurationLoader:
         self.ras_build_path = self.config["conf"]["ras_build_path"]
         self.ms_build_path = self.config["conf"]["ms_build_path"]
         self.fhs_project_path = self.config["conf"]["fhs_project_path"]
+        self.ras_project_path = self.config["conf"]["ras_project_path"]
 
         self.fhs_name_1 = self.config["conf"]["fhs_name_1"]
         self.fhs_name_2 = self.config["conf"]["fhs_name_2"]
+        self.ras_name_1 = self.config["conf"]["ras_name_1"]
 
         self.fhs_bootstrap_workspace = self.config["conf"]["fhs_bootstrap_workspace"]
+        self.ras_bootstrap_workspace = self.config["conf"]["ras_bootstrap_workspace"]
 
     def load_fhs_operator(self, operator_name):
         operator_id = self.config[operator_name]["id"]

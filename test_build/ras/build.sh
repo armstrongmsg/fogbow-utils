@@ -1,0 +1,1 @@
+docker build --no-cache -t fogbow/resource-allocation-service:latest .
