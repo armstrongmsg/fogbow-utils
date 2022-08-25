@@ -47,7 +47,7 @@ class RasContainerBootstrap:
         LOGGER.log("Building RAS %s" % self.ras_config)
         print(self.ras_bootstrap_workspace)
 
-        if not len(list_images_with_name("fogbow/resource-allocation-service:latest")) > 0:
+        if not len(list_images_with_name("fogbow/resource-allocation-service:base")) > 0:
             ShellCommandBuilder("bash"). \
                 with_arg("build_base.sh"). \
                 in_directory(self.ras_bootstrap_workspace). \

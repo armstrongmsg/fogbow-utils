@@ -3,6 +3,7 @@ import time
 from utils.tests.fhs.fhs_test_utils import FHSTest
 from utils.clients.fhs_client import FHSClient
 from utils.tools.fhs_bootstrap import FHSBootstrap
+from utils.tools.ras_container_bootstrap import RasContainerBootstrap
 from utils.tools.logger import Log
 
 
@@ -22,9 +23,25 @@ class TestMultiFHS(FHSTest):
                                   self.configuration.fhs_bootstrap_workspace)
         self.fhs_1.deploy()
 
+        self.ras_1 = RasContainerBootstrap(self.configuration.as_build_path, self.configuration.ms_build_path,
+                                           self.configuration.ras_port, self.configuration.ras_name_1,
+                                           self.configuration.ras_project_path,
+                                           self.configuration.ras_bootstrap_workspace)
+
+        self.ras_1.deploy()
+
+        self.ras_2 = RasContainerBootstrap(self.configuration.as_build_path, self.configuration.ms_build_path,
+                                           self.configuration.ras_port_2, self.configuration.ras_name_2,
+                                           self.configuration.ras_project_path,
+                                           self.configuration.ras_bootstrap_workspace)
+
+        self.ras_2.deploy()
+
     def cleanup(self):
         self.fhs_1.cleanup()
         self.fhs_2.cleanup()
+        self.ras_1.cleanup()
+        self.ras_2.cleanup()
 
     def get_test_name(self):
         return "TestMultiFHS"
@@ -34,6 +51,7 @@ class TestMultiFHS(FHSTest):
         federation = self.configuration.load_federation("federation")
         service_owner_1 = self.configuration.load_user("service_owner_1")
         ras_get_version = self.configuration.load_service("ras_get_version")
+        ras_get_clouds = self.configuration.load_service("ras_get_clouds")
         common_user_1 = self.configuration.load_user("common_user_1")
 
         #
@@ -157,16 +175,21 @@ class TestMultiFHS(FHSTest):
                                                               service_owner_1.password)
 
         print("### Registering services")
-        get_version_service_id = self.fhs_client.register_service(rewrap_service_owner_1_token, federation_id_to_join,
-                                                                  ras_get_version.owner,
-                                                                  ras_get_version.endpoint,
-                                                                  ras_get_version.metadata,
-                                                                  ras_get_version.discovery_policy,
-                                                                  ras_get_version.access_policy)
+        get_clouds_service_id = self.fhs_client.register_service(rewrap_service_owner_1_token, federation_id_to_join,
+                                                                  ras_get_clouds.owner,
+                                                                  ras_get_clouds.endpoint,
+                                                                  ras_get_clouds.metadata,
+                                                                  ras_get_clouds.discovery_policy,
+                                                                  ras_get_clouds.access_policy)
 
-        LOGGER.log("Response: %s" % str(get_version_service_id))
+        LOGGER.log("Response: %s" % str(get_clouds_service_id))
 
         time.sleep(20)
+
+        response = self.fhs_client.invoke_service(rewrap_service_owner_1_token, federation_id_to_join,
+                                                  get_clouds_service_id, "GET", ["member1.lsd.ufcg.edu.br"], {}, {})
+
+        LOGGER.log("Response: %s" % str(response))
 
         self.fhs_client = FHSClient(self.configuration.fogbow_ip, self.configuration.fhs_port)
 
@@ -192,5 +215,11 @@ class TestMultiFHS(FHSTest):
                                                             common_user_1.password)
 
         response = self.fhs_client.discover_services(rewrap_common_user_1_token, federation_id_to_join, "aaa")
+
+        LOGGER.log("Response: %s" % str(response))
+
+        # this call shouldn't work
+        response = self.fhs_client.invoke_service(rewrap_common_user_1_token, federation_id_to_join, get_clouds_service_id, "GET",
+                                       ["member2.lsd.ufcg.edu.br"], {}, {})
 
         LOGGER.log("Response: %s" % str(response))

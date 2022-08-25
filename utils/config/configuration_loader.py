@@ -15,6 +15,7 @@ class ConfigurationLoader:
         self.fhs_port = self.config["conf"]["fhs_port"]
         self.fhs_port_2 = self.config["conf"]["fhs_port_2"]
         self.ras_port = self.config["conf"]["ras_port"]
+        self.ras_port_2 = self.config["conf"]["ras_port_2"]
         self.test_utils_port = self.config["conf"]["test_utils_port"]
         self.provider = self.config["conf"]["provider"]
 
@@ -46,6 +47,7 @@ class ConfigurationLoader:
         self.fhs_name_1 = self.config["conf"]["fhs_name_1"]
         self.fhs_name_2 = self.config["conf"]["fhs_name_2"]
         self.ras_name_1 = self.config["conf"]["ras_name_1"]
+        self.ras_name_2 = self.config["conf"]["ras_name_2"]
 
         self.fhs_bootstrap_workspace = self.config["conf"]["fhs_bootstrap_workspace"]
         self.ras_bootstrap_workspace = self.config["conf"]["ras_bootstrap_workspace"]

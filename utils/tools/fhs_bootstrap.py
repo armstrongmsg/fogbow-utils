@@ -52,7 +52,7 @@ class FHSBootstrap:
         LOGGER.log("Building FHS %s" % self.fhs_config)
         print(self.fhs_bootstrap_workspace)
 
-        if not len(list_images_with_name("fogbow/federation-hosting-service:latest")) > 0:
+        if not len(list_images_with_name("fogbow/federation-hosting-service:base")) > 0:
             ShellCommandBuilder("bash"). \
                 with_arg("build_base.sh"). \
                 in_directory(self.fhs_bootstrap_workspace). \
